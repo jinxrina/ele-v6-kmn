@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Singapore Electrical Calculator</title>
+    <style>
+        :root {
+            --primary-color: #2196F3;
+            --secondary-color: #03A9F4;
+            --text-color: #333;
+            --bg-color: #f5f5f5;
+            --card-bg: #fff;
+            --shadow-color: rgba(0,0,0,0.1);
+            --input-bg: #fff;
+            --result-bg: #e3f2fd;
+        }
+        
+        .dark-theme {
+            --primary-color: #2196F3;
+            --secondary-color: #0288D1;
+            --text-color: #f5f5f5;
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --shadow-color: rgba(0,0,0,0.3);
+            --input-bg: #2c2c2c;
+            --result-bg: #0d47a1;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            text-align: center;
+            padding: 2rem 1rem;
+            position: relative;
+            box-shadow: 0 4px 6px var(--shadow-color);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .theme-toggle {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            border-radius: 50px;
+            padding: 0.5rem 1rem;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s;
+        }
+        
+        .theme-toggle:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+        
+        nav {
+            background-color: var(--card-bg);
+            padding: 1rem;
+            box-shadow: 0 2px 4px var(--shadow-color);
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .nav-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .nav-btn:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px var(--shadow-color);
+        }
+        
+        main {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        
+        .calculator-section {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 10px var(--shadow-color);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s, transform 0.5s;
+        }
+        
+        .calculator-section.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        h2 {
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        h2 i {
+            font-size: 1.5rem;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+        
+        select, input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            font-size: 1rem;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.3);
+        }
+        
+        .calc-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 2px 5px var(--shadow-color);
+        }
+        
+        .calc-btn:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px var(--shadow-color);
+        }
+        
+        .calc-btn:active {
+            transform: translateY(0);
+        }
+        
+        .result-box {
+            background-color: var(--result-bg);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            display: none;
+            opacity: 0;
+            transform: scale(0.95);
+            transition: all 0.5s;
+        }
+        
+        .result-box.show {
+            display: block;
+            opacity: 1;
+            transform: scale(1);
+        }
+        
+        .result-title {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+        
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+        }
+        
+        th {
+            background-color: rgba(33, 150, 243, 0.1);
+        }
+        
+        .usage-type {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .usage-btn {
+            background-color: var(--card-bg);
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+            border-radius: 50px;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .usage-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 2rem;
+            background-color: var(--card-bg);
+            margin-top: 2rem;
+            box-shadow: 0 -2px 10px var(--shadow-color);
+        }
+        
+        /* Special animation for calculation */
+        @keyframes calculate {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .calculating {
+            animation: calculate 0.5s ease-in-out;
+        }
+        
+        /* Loading animation */
+        .loader {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+            display: none;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Media queries */
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            header {
+                padding: 1.5rem 1rem;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Singapore Electrical Calculator</h1>
+        <p class="subtitle">Based on Singapore's Code of Practice for Electrical Installations</p>
+        <button class="theme-toggle" onclick="toggleTheme()">
+            <span id="theme-icon">🌙</span> <span id="theme-text">Dark Mode</span>
+        </button>
+    </header>
+    
+    <nav>
+        <button class="nav-btn" onclick="showSection('cable')">Wire/Cable Size</button>
+        <button class="nav-btn" onclick="showSection('breaker')">Circuit Breaker</button>
+        <button class="nav-btn" onclick="showSection('lighting')">Lighting Design</button>
+        <button class="nav-btn" onclick="showSection('fault')">Fault Calculation</button>
+    </nav>
+    
+    <main>
+        <div id="cable" class="calculator-section">
+            <h2>Wire/Cable Size Calculator</h2>
+            
+            <div class="usage-type">
+                <button class="usage-btn active" data-usage="residential">Residential</button>
+                <button class="usage-btn" data-usage="commercial">Commercial</button>
+                <button class="usage-btn" data-usage="office">Office</button>
+                <button class="usage-btn" data-usage="school">School</button>
+                <button class="usage-btn" data-usage="industrial">Industrial</button>
+            </div>
+            
+            <div class="form-grid">
+                <div>
+                    <div class="form-group">
+                        <label for="cable-current">Current (Amps)</label>
+                        <input type="number" id="cable-current" min="0" step="0.1" placeholder="Enter current in amps">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="cable-voltage">Voltage (Volts)</label>
+                        <select id="cable-voltage">
+                            <option value="230">230V (Single Phase)</option>
+                            <option value="400">400V (Three Phase)</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div>
+                    <div class="form-group">
+                        <label for="cable-length">Cable Length (meters)</label>
+                        <input type="number" id="cable-length" min="0" step="1" placeholder="Enter cable length">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="cable-type">Cable Type</label>
+                        <select id="cable-type">
+                            <option value="pvc">PVC Insulated</option>
+                            <option value="xlpe">XLPE Insulated</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div>
+                    <div class="form-group">
+                        <label for="cable-installation">Installation Method</label>
+                        <select id="cable-installation">
+                            <option value="conduit">In Conduit</option>
+                            <option value="tray">On Cable Tray</option>
+                            <option value="buried">Direct Buried</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="cable-ambient">Ambient Temperature (°C)</label>
+                        <input type="number" id="cable-ambient" value="30" min="0" max="50" step="1">
+                    </div>
+                </div>
+            </div>
+            
+            <button class="calc-btn" onclick="calculateCableSize()">
+                <span id="cable-loader" class="loader"></span>
+                Calculate Cable Size
+            </button>
+            
+            <div id="cable-result" class="result-box">
+                <h3 class="result-title">Recommended Cable Size</h3>
+                <p id="cable-size-result"></p>
+                <p id="cable-voltage-drop"></p>
+                <table id="cable-table">
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Value</th>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        
+        <div id="breaker" class="calculator-section">
+            <h2>Circuit Breaker Size Calculator</h2>
+            
+            <div class="usage-type">
+                <button class="usage-btn active" data-usage="residential">Residential</button>
+                <button class="usage-btn" data-usage="commercial">Commercial</button>
+                <button class="usage-btn" data-usage="office">Office</button>
+                <button class="usage-btn" data-usage="school">School</button>
+                <button class="usage-btn" data-usage="industrial">Industrial</button>
+            </div>
+            
+            <div class="form-grid">
+                <div>
+                    <div class="form-group">
+                        <label for="breaker-load">Connected Load (Watts)</label>
+                        <input type="number" id="breaker-load" min="0" step="10" placeholder="Enter load in watts">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="breaker-voltage">Voltage (Volts)</label>
+                        <select id="breaker-voltage">
+                            <option value="230">230V (Single Phase)</option>
+                            <option value="400">400V (Three Phase)</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div>
+                    <div class="form-group">
+                        <label for="breaker-type">Breaker Type</label>
+                        <select id="breaker-type">
+                            <option value="mcb">Miniature Circuit Breaker (MCB)</option>
+                            <option value="mccb">Moulded Case Circuit Breaker (MCCB)</option>
+                            <option value="rcd">Residual Current Device (RCD)</option>
+                            <option value="rcbo">RCBO (RCD + MCB)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="breaker-phase">Phase Configuration</label>
+                        <select id="breaker-phase">
+                            <option value="1">Single Phase</option>
+                            <option value="3">Three Phase</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div>
+                    <div class="form-group">
+                        <label for="breaker-application">Application</label>
+                        <select id="breaker-application">
+                            <option value="lighting">Lighting Circuit</option>
+                            <option value="power">Power Socket Circuit</option>
+                            <option value="aircon">Air Conditioning</option>
+                            <option value="motor">Motor Load</option>
+                            <option value="main">Main Distribution Board</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="breaker-diversity">Diversity Factor (%)</label>
+                        <input type="number" id="breaker-diversity" value="100" min="1" max="100" step="1">
+                    </div>
+                </div>
+            </div>
+            
+            <button class="calc-btn" onclick="calculateBreakerSize()">
+                <span id="breaker-loader" class="loader"></span>
+                Calculate Breaker Size
+            </button>
+            
+            <div id="breaker-result" class="result-box">
+                <h3 class="result-title">Recommended Circuit Breaker</h3>
+                <p id="breaker-size-result"></p>
+                <table id="breaker-table">
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Value</th>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        
+        <div id="lighting" class="calculator-section">
+            <h2>Lighting Design Calculator</h2>
+            
+            <div class="usage-type">
+                <button class="usage-btn active" data-usage="residential">Residential</button>
+                <button class="usage-btn" data-usage="commercial">Commercial</button>
+                <button class="usage-btn" data-usage="office">Office</button>
+                <button class="usage-btn" data-usage="school">School</button>
+                <button class="usage-btn" data-usage="industrial">Industrial</button>
+            </div>
+            
+            <div class="form-grid">
+                <div>
+                    <div class="form-group">
+                        <label for="light-length">Room Length (meters)</label>
+                        <input type="number" id="light-length" min="0" step="0.1" placeholder="Enter room length">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="light-width">Room Width (meters)</label>
+                        <input type="number" id="light-width" min="0" step="0.1" placeholder="Enter room width">
+                    </div>
+                </div>
+                
+                <div>
+                    <div class="form-group">
+                        <label for="light-height">Ceiling Height (meters)</label>
+                        <input type="number" id="light-height" min="0" step="0.1" placeholder="Enter ceiling height">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="light-level">Required Illuminance Level (Lux)</label>
+                        <select id="light-level">
+                            <option value="100">100 lux - Corridors, Halls</option>
+                            <option value="150">150 lux - Stairs, Storage</option>
+                            <option value="200">200 lux - Restrooms, Dining</option>
+                            <option value="300">300 lux - General Residential</option>
+                            <option value="500">500 lux - Offices, Classrooms</option>
+                            <option value="750">750 lux - Detailed Work</option>
+                            <option value="1000">1000 lux - Precision Work</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div>
+                    <div class="form-group">
+                        <label for="light-type">Light Fixture Type</label>
+                        <select id="light-type">
+                            <option value="led">LED Panel</option>
+                            <option value="fluorescent">Fluorescent Tube</option>
+                            <option value="downlight">LED Downlight</option>
+                            <option value="highbay">High Bay</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="light-lumen">Lumens per Fixture</label>
+                        <input type="number" id="light-lumen" min="0" step="100" placeholder="Enter lumens per fixture">
+                    </div>
+                </div>
+            </div>
+            
+            <button class="calc-btn" onclick="calculateLighting()">
+                <span id="lighting-loader" class="loader"></span>
+                Calculate Lighting Requirements
+            </button>
+            
+            <div id="lighting-result" class="result-box">
+                <h3 class="result-title">Lighting Design Results</h3>
+                <p id="lighting-fixtures-result"></p>
+                <table id="lighting-table">
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Value</th>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        
+        <div id="fault" class="calculator-section">
+            <h2>Electrical Fault Calculator</h2>
+            
+            <div class="usage-type">
+                <button class="usage-btn active" data-usage="residential">Residential</button>
+                <button class="usage-btn" data-usage="commercial">Commercial</button>
+                <button class="usage-btn" data-usage="office">Office</button>
+                <button class="usage-btn" data-usage="school">School</button>
+                <button class="usage-btn" data-usage="industrial">Industrial</button>
+            </div>
+            
+            <div class="form-grid">
+                <div>
+                    <div class="form-group">
+                        <label for="fault-type">Fault Type</label>
+                        <select id="fault-type">
+                            <option value="short-circuit">Short Circuit</option>
+                            <option value="earth">Earth Fault</option>
+                            <option value="overload">Overload</option>
+                            <option value="arc">Arc Fault</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="fault-voltage">System Voltage (Volts)</label>
+                        <select id="fault-voltage">
+                            <option value="230">230V (Single Phase)</option>
+                            <option value="400">400V (Three Phase)</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div>
+                    <div class="form-group">
+                        <label for="fault-impedance">System Impedance (Ohms)</label>
+                        <input type="number" id="fault-impedance" min="0" step="0.01" placeholder="Enter system impedance">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="fault-cable-length">Cable Length to Fault (meters)</label>
+                        <input type="number" id="fault-cable-length" min="0" step="1" placeholder="Enter cable length">
+                    </div>
+                </div>
+                
+                <div>
+                    <div class="form-group">
+                        <label for="fault-cable-size">Cable Size (mm²)</label>
+                        <select id="fault-cable-size">
+                            <option value="1.5">1.5 mm²</option>
+                            <option value="2.5">2.5 mm²</option>
+                            <option value="4">4 mm²</option>
+                            <option value="6">6 mm²</option>
+                            <option value="10">10 mm²</option>
+                            <option value="16">16 mm²</option>
+                            <option value="25">25 mm²</option>
+                            <option value="35">35 mm²</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="fault-earth-resistance">Earth Resistance (Ohms)</label>
+                        <input type="number" id="fault-earth-resistance" min="0" step="0.1" value="1" placeholder="Enter earth resistance">
+                    </div>
+                </div>
+            </div>
+            
+            <button class="calc-btn" onclick="calculateFault()">
+                <span id="fault-loader" class="loader"></span>
+                Calculate Fault Values
+            </button>
+            
+            <div id="fault-result" class="result-box">
+                <h3 class="result-title">Fault Analysis Results</h3>
+                <p id="fault-current-result"></p>
+                <table id="fault-table">
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Value</th>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </main>
+    
+    <footer>
+        <p>Singapore Electrical Calculator Tool - Based on SS 638 and CP5</p>
+        <p>For educational purposes only. Always consult with a licensed electrician.</p>
+    </footer>
+    
+    <script>
+        // Theme toggle
+        function toggleTheme() {
+            const body = document.body;
+            const themeIcon = document.getElementById('theme-icon');
+            const themeText = document.getElementById('theme-text');
+            
+            if (body.classList.contains('dark-theme')) {
+                body.classList.remove('dark-theme');
+                themeIcon.textContent = '🌙';
+                themeText.textContent = 'Dark Mode';
+            } else {
+                body.classList.add('dark-theme');
+                themeIcon.textContent = '☀️';
+                themeText.textContent = 'Light Mode';
+            }
+        }
+        
+        // Section navigation
+        function showSection(sectionId) {
+            const sections = document.querySelectorAll('.calculator-section');
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            const targetSection = document.getElementById(sectionId);
+            setTimeout(() => {
+                targetSection.classList.add('active');
+            }, 100);
+            
+            // Scroll to section
+            targetSection.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // Initialize first section as active
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('cable').classList.add('active');
+            
+            // Add click handlers for usage type buttons
+            const usageBtns = document.querySelectorAll('.usage-btn');
+            usageBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // Find parent section
+                    const section = this.closest('.calculator-section');
+                    
+                    // Remove active class from all buttons in this section
+                    const sectionBtns = section.querySelectorAll('.usage-btn');
+                    sectionBtns.forEach(b => b.classList.remove('active'));
+                    
+                    // Add active class to clicked button
+                    this.classList.add('active');
+                });
+            });
+        });
+        
+        // Simulation of calculation with loading animation
+        function simulateCalculation(loaderId, duration = 1000) {
+            const loader = document.getElementById(loaderId);
+            loader.style.display = 'inline-block';
+            
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    loader.style.display = 'none';
+                    resolve();
+                }, duration);
+            });
+        }
+        
+        // Show result box with animation
+        function showResult(resultId) {
+            const resultBox = document.getElementById(resultId);
+            resultBox.classList.add('show');
+        }
+        
+        // Cable size calculation
+        async function calculateCableSize() {
+            const current = parseFloat(document.getElementById('cable-current').value);
+            const voltage = parseFloat(document.getElementById('cable-voltage').value);
+            const length = parseFloat(document.getElementById('cable-length').value);
+            const cableType = document.getElementById('cable-type').value;
+            const installation = document.getElementById('cable-installation').value;
+            const ambient = parseFloat(document.getElementById('cable-ambient').value);
+            
+            // Validate inputs
+            if (!current || !length) {
+                alert('Please fill in all required fields');
+                return;
+            }
+            
+            // Get usage type
+            const usageType = document.querySelector('#cable .usage-btn.active').dataset.usage;
+            
+            // Apply button animation
+            document.querySelector('#cable .calc-btn').classList.add('calculating');
+            setTimeout(() => {
+                document.querySelector('#cable .calc-btn').classList.remove('calculating');
+            }, 500);
+            
+            // Simulate calculation
+            await simulateCalculation('cable-loader', 800);
+            
+            // Calculate cable size based on Singapore standards (simplified version)
+            let cableSize;
+            let voltageDrop;
+            
+            // Current capacity factors based on Singapore CP5
+            const currentFactor = cableType === 'xlpe' ? 1.2 : 1.0;
+            const temperatureFactor = ambient > 30 ? (0.9 - (ambient - 30) * 0.01) : 1.0;
+            const installationFactor = installation === 'conduit' ? 0.8 : installation === 'tray' ? 0.9 : 1.0;
+            
+            const designCurrent = current / (currentFactor * temperatureFactor * installationFactor);
+            
+            // Simple cable size selection based on current
+            if (designCurrent <= 16) cableSize = 1.5;
+            else if (designCurrent <= 22) cableSize = 2.5;
+            else if (designCurrent <= 30) cableSize = 4;
+            else if (designCurrent <= 40) cableSize = 6;
+            else if (designCurrent <= 55) cableSize = 10;
+            else if (designCurrent <= 75) cableSize = 16;
+            else if (designCurrent <= 100) cableSize = 25;
+            else if (designCurrent <= 130) cableSize = 35;
+            else if (designCurrent <= 170) cableSize = 50;
+            else cableSize = 70;
+            
+                      // Calculate voltage drop (simplified)
+            const resistivity = cableType === 'pvc' ? 0.018 : 0.016; // ohm mm²/m
+            voltageDrop = (resistivity * current * length * 2) / (cableSize);
+            const voltageDropPercent = (voltageDrop / voltage) * 100;
+            
+            // Check if voltage drop is acceptable (< 2.5% for lighting, < 4% for power)
+            const maxVoltageDropPercent = 4; // Using 4% as default
+            const isVoltageDropAcceptable = voltageDropPercent <= maxVoltageDropPercent;
+            
+            // Populate result
+            document.getElementById('cable-size-result').innerHTML = `<strong>${cableSize} mm²</strong> cable is recommended for your application.`;
+            document.getElementById('cable-voltage-drop').innerHTML = `Voltage drop: <strong>${voltageDrop.toFixed(2)} V</strong> (${voltageDropPercent.toFixed(2)}%) - ${isVoltageDropAcceptable ? '<span style="color:green">Acceptable</span>' : '<span style="color:red">Too high</span>'}`;
+            
+            // Populate table
+            const cableTable = document.getElementById('cable-table');
+            cableTable.innerHTML = `
+                <tr><th>Parameter</th><th>Value</th></tr>
+                <tr><td>Current Rating</td><td>${current.toFixed(2)} A</td></tr>
+                <tr><td>Design Current</td><td>${designCurrent.toFixed(2)} A</td></tr>
+                <tr><td>Cable Size</td><td>${cableSize} mm²</td></tr>
+                <tr><td>Voltage Drop</td><td>${voltageDrop.toFixed(2)} V (${voltageDropPercent.toFixed(2)}%)</td></tr>
+                <tr><td>Cable Type</td><td>${cableType === 'pvc' ? 'PVC Insulated' : 'XLPE Insulated'}</td></tr>
+                <tr><td>Installation Method</td><td>${installation === 'conduit' ? 'In Conduit' : installation === 'tray' ? 'On Cable Tray' : 'Direct Buried'}</td></tr>
+                <tr><td>Application</td><td>${usageType.charAt(0).toUpperCase() + usageType.slice(1)}</td></tr>
+            `;
+            
+            // Show result
+            showResult('cable-result');
+        }
+        
+        // Circuit breaker calculation
+        async function calculateBreakerSize() {
+            const load = parseFloat(document.getElementById('breaker-load').value);
+            const voltage = parseFloat(document.getElementById('breaker-voltage').value);
+            const breakerType = document.getElementById('breaker-type').value;
+            const phase = parseInt(document.getElementById('breaker-phase').value);
+            const application = document.getElementById('breaker-application').value;
+            const diversity = parseFloat(document.getElementById('breaker-diversity').value) / 100;
+            
+            // Validate inputs
+            if (!load) {
+                alert('Please fill in all required fields');
+                return;
+            }
+            
+            // Get usage type
+            const usageType = document.querySelector('#breaker .usage-btn.active').dataset.usage;
+            
+            // Apply button animation
+            document.querySelector('#breaker .calc-btn').classList.add('calculating');
+            setTimeout(() => {
+                document.querySelector('#breaker .calc-btn').classList.remove('calculating');
+            }, 500);
+            
+            // Simulate calculation
+            await simulateCalculation('breaker-loader', 800);
+            
+            // Calculate breaker size based on Singapore standards (simplified)
+            let current;
+            
+            if (phase === 1) {
+                current = (load * diversity) / voltage;
+            } else {
+                current = (load * diversity) / (voltage * Math.sqrt(3));
+            }
+            
+            // Add safety factor
+            const safetyFactor = application === 'motor' ? 2.5 : 1.25;
+            const designCurrent = current * safetyFactor;
+            
+            // Standard breaker sizes in Singapore
+            const standardBreakers = [6, 10, 16, 20, 25, 32, 40, 50, 63, 80, 100, 125];
+            
+            // Find the next standard size
+            let breakerSize = standardBreakers[0];
+            for (let i = 0; i < standardBreakers.length; i++) {
+                if (standardBreakers[i] >= designCurrent) {
+                    breakerSize = standardBreakers[i];
+                    break;
+                }
+                if (i === standardBreakers.length - 1) {
+                    breakerSize = standardBreakers[i];
+                }
+            }
+            
+            // Populate result
+            document.getElementById('breaker-size-result').innerHTML = `<strong>${breakerSize} A</strong> ${breakerType.toUpperCase()} is recommended for your application.`;
+            
+            // Populate table
+            const breakerTable = document.getElementById('breaker-table');
+            breakerTable.innerHTML = `
+                <tr><th>Parameter</th><th>Value</th></tr>
+                <tr><td>Load</td><td>${load.toFixed(2)} W</td></tr>
+                <tr><td>Full Load Current</td><td>${current.toFixed(2)} A</td></tr>
+                <tr><td>Design Current</td><td>${designCurrent.toFixed(2)} A</td></tr>
+                <tr><td>Circuit Breaker Size</td><td>${breakerSize} A</td></tr>
+                <tr><td>Breaker Type</td><td>${breakerType.toUpperCase()}</td></tr>
+                <tr><td>Phase Configuration</td><td>${phase === 1 ? 'Single Phase' : 'Three Phase'}</td></tr>
+                <tr><td>Application</td><td>${application.charAt(0).toUpperCase() + application.slice(1)}</td></tr>
+            `;
+            
+            // Show result
+            showResult('breaker-result');
+        }
+        
+        // Lighting design calculation
+        async function calculateLighting() {
+            const length = parseFloat(document.getElementById('light-length').value);
+            const width = parseFloat(document.getElementById('light-width').value);
+            const height = parseFloat(document.getElementById('light-height').value);
+            const luxLevel = parseFloat(document.getElementById('light-level').value);
+            const fixtureType = document.getElementById('light-type').value;
+            const lumensPerFixture = parseFloat(document.getElementById('light-lumen').value);
+            
+            // Validate inputs
+            if (!length || !width || !height || !lumensPerFixture) {
+                alert('Please fill in all required fields');
+                return;
+            }
+            
+            // Get usage type
+            const usageType = document.querySelector('#lighting .usage-btn.active').dataset.usage;
+            
+            // Apply button animation
+            document.querySelector('#lighting .calc-btn').classList.add('calculating');
+            setTimeout(() => {
+                document.querySelector('#lighting .calc-btn').classList.remove('calculating');
+            }, 500);
+            
+            // Simulate calculation
+            await simulateCalculation('lighting-loader', 800);
+            
+            // Calculate lighting based on Singapore standards (simplified lumen method)
+            const roomArea = length * width;
+            const roomIndex = (roomArea) / (height * (length + width));
+            
+            // Light loss factor based on fixture type
+            let lightLossFactor;
+            switch(fixtureType) {
+                case 'led': lightLossFactor = 0.8; break;
+                case 'fluorescent': lightLossFactor = 0.7; break;
+                case 'downlight': lightLossFactor = 0.75; break;
+                case 'highbay': lightLossFactor = 0.65; break;
+                default: lightLossFactor = 0.7;
+            }
+            
+            // Utilization factor based on room index (simplified)
+            let utilizationFactor;
+            if (roomIndex < 0.5) utilizationFactor = 0.3;
+            else if (roomIndex < 1) utilizationFactor = 0.4;
+            else if (roomIndex < 1.5) utilizationFactor = 0.5;
+            else if (roomIndex < 2) utilizationFactor = 0.6;
+            else if (roomIndex < 3) utilizationFactor = 0.7;
+            else utilizationFactor = 0.8;
+            
+            // Total lumens required
+            const totalLumensRequired = (luxLevel * roomArea) / (utilizationFactor * lightLossFactor);
+            
+            // Number of fixtures required
+            const fixturesRequired = Math.ceil(totalLumensRequired / lumensPerFixture);
+            
+            // Calculate fixture layout
+            let fixturesLength = Math.round(Math.sqrt(fixturesRequired * length / width));
+            let fixturesWidth = Math.ceil(fixturesRequired / fixturesLength);
+            
+            // Adjust if aspect ratio is too extreme
+            if (fixturesLength / fixturesWidth > 2 || fixturesWidth / fixturesLength > 2) {
+                fixturesLength = Math.round(Math.sqrt(fixturesRequired));
+                fixturesWidth = Math.ceil(fixturesRequired / fixturesLength);
+            }
+            
+            // Populate result
+            document.getElementById('lighting-fixtures-result').innerHTML = `<strong>${fixturesRequired}</strong> fixtures required (approx. ${fixturesLength} × ${fixturesWidth} layout).`;
+            
+            // Populate table
+            const lightingTable = document.getElementById('lighting-table');
+            lightingTable.innerHTML = `
+                <tr><th>Parameter</th><th>Value</th></tr>
+                <tr><td>Room Dimensions</td><td>${length.toFixed(2)} m × ${width.toFixed(2)} m × ${height.toFixed(2)} m</td></tr>
+                <tr><td>Room Area</td><td>${roomArea.toFixed(2)} m²</td></tr>
+                <tr><td>Required Illuminance</td><td>${luxLevel} lux</td></tr>
+                <tr><td>Room Index</td><td>${roomIndex.toFixed(2)}</td></tr>
+                <tr><td>Utilization Factor</td><td>${utilizationFactor.toFixed(2)}</td></tr>
+                <tr><td>Light Loss Factor</td><td>${lightLossFactor.toFixed(2)}</td></tr>
+                <tr><td>Total Lumens Required</td><td>${totalLumensRequired.toFixed(2)} lm</td></tr>
+                <tr><td>Fixtures Required</td><td>${fixturesRequired} (${fixturesLength} × ${fixturesWidth})</td></tr>
+            `;
+            
+            // Show result
+            showResult('lighting-result');
+        }
+        
+        // Fault calculation
+        async function calculateFault() {
+            const faultType = document.getElementById('fault-type').value;
+            const voltage = parseFloat(document.getElementById('fault-voltage').value);
+            const impedance = parseFloat(document.getElementById('fault-impedance').value);
+            const cableLength = parseFloat(document.getElementById('fault-cable-length').value);
+            const cableSize = parseFloat(document.getElementById('fault-cable-size').value);
+            const earthResistance = parseFloat(document.getElementById('fault-earth-resistance').value);
+            
+            // Validate inputs
+            if (!impedance || !cableLength) {
+                alert('Please fill in all required fields');
+                return;
+            }
+            
+            // Get usage type
+            const usageType = document.querySelector('#fault .usage-btn.active').dataset.usage;
+            
+            // Apply button animation
+            document.querySelector('#fault .calc-btn').classList.add('calculating');
+            setTimeout(() => {
+                document.querySelector('#fault .calc-btn').classList.remove('calculating');
+            }, 500);
+            
+            // Simulate calculation
+            await simulateCalculation('fault-loader', 800);
+            
+            // Calculate fault current based on Singapore standards (simplified)
+            let faultCurrent, clearingTime, description;
+            
+            // Cable resistance per km (simplified)
+            const cableResistancePerKm = 18 / cableSize; // ohm/km
+            const cableResistance = cableResistancePerKm * (cableLength / 1000) * 2; // ohm for go and return
+            
+            switch(faultType) {
+                case 'short-circuit':
+                    faultCurrent = voltage / (impedance + cableResistance);
+                    clearingTime = faultCurrent > 100 ? 0.1 : 0.4;
+                    description = "Short circuit fault current at the specified location.";
+                    break;
+                case 'earth':
+                    faultCurrent = voltage / (impedance + cableResistance + earthResistance);
+                    clearingTime = faultCurrent > 30 ? 0.3 : 1.0;
+                    description = "Earth fault current through the specified path.";
+                    break;
+                case 'overload':
+                    // Simplified overload calculation (1.5 times nominal current)
+                    const nominalCurrent = voltage / (impedance * 2);
+                    faultCurrent = nominalCurrent * 1.5;
+                    clearingTime = 60; // typical for overload (in seconds)
+                    description = "Overload current assuming 150% of nominal load.";
+                    break;
+                case 'arc':
+                    // Arc fault is typically 30-50% of short circuit current
+                    const shortCircuitCurrent = voltage / (impedance + cableResistance);
+                    faultCurrent = shortCircuitCurrent * 0.4;
+                    clearingTime = 0.5;
+                    description = "Arc fault current (estimated at 40% of short circuit).";
+                    break;
+                default:
+                    faultCurrent = 0;
+                    clearingTime = 0;
+                    description = "Unknown fault type.";
+            }
+            
+            // Populate result
+            document.getElementById('fault-current-result').innerHTML = `<strong>${faultCurrent.toFixed(2)} A</strong> fault current calculated for ${faultType.replace('-', ' ')} fault.`;
+            
+            // Populate table
+            const faultTable = document.getElementById('fault-table');
+            faultTable.innerHTML = `
+                <tr><th>Parameter</th><th>Value</th></tr>
+                <tr><td>Fault Type</td><td>${faultType.replace('-', ' ').charAt(0).toUpperCase() + faultType.replace('-', ' ').slice(1)}</td></tr>
+                <tr><td>Fault Current</td><td>${faultCurrent.toFixed(2)} A</td></tr>
+                <tr><td>System Voltage</td><td>${voltage} V</td></tr>
+                <tr><td>System Impedance</td><td>${impedance.toFixed(4)} Ω</td></tr>
+                <tr><td>Cable Resistance</td><td>${cableResistance.toFixed(4)} Ω</td></tr>
+                <tr><td>Estimated Clearing Time</td><td>${clearingTime} s</td></tr>
+                <tr><td>Description</td><td>${description}</td></tr>
+            `;
+            
+            // Show result
+            showResult('fault-result');
+        }
+    </script>
+</body>
+</html>
+
